@@ -2,9 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>$Title$</title>
+    <title>currenttodos</title>
 </head>
 <body>
-$END$
+{% extends 'todo/base.html' %}
+{% block content %}
+
+<ul>
+    {% for todo in todos %}
+    <li>
+       <a href="{% url 'viewtodo' todo.id %}">
+           {% if todo.important %}<strong>{% endif %}
+                {{ todo.title }}
+           {% if todo.important %}</strong>{% endif %}
+           {% if todo.memo %} - {{ todo.memo }}{% endif %}
+           {% if todo.datecompleted %} - {{ todo.datecompleted }}{% endif %}
+           {% if request.path == '/completed/' %}
+                {{ todo.datecompleted|date:'M j Y H:i' }}
+           {% endif %}
+       </a>
+    </li>
+    {% endfor %}
+</ul>
+<br>
+{% if request.path == '/completed/' %}
+<form method="post" action="{% url 'currenttodos' %}">
+    {% csrf_token %}
+    <button type="submit">Not Completed</button>
+</form>
+<br>
+{% endif %}
+{% if request.path == '/current/' %}
+    <form method="post" action="{% url 'completedtodos' %}">
+        {% csrf_token %}
+        <button type="submit">Completed</button>
+    </form>
+{% endif %}
+{% endblock %}
 </body>
 </html>
